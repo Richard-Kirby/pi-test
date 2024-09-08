@@ -27,10 +27,10 @@ pinout_wiring = [
 for i in pinout_wiring:
     print(i)
 
-
 """
 This bit just gets the pigpiod daemon up and running if it isn't already.
 The pigpio daemon accesses the Raspberry Pi GPIO.
+"""
 """
 def start_pigpiod():
     p = subprocess.Popen(['pgrep', '-f', 'pigpiod'], stdout=subprocess.PIPE)
@@ -44,6 +44,29 @@ start_pigpiod()
 import pigpio
 
 pi = pigpio.pi()
+
+"""
+
+import RPi.GPIO as GPIO
+
+GPIO.setmode(GPIO.BCM)
+GPIO.setup(2, GPIO.OUT)
+GPIO.output(2, 0)
+GPIO.setup(14, GPIO.IN)
+print(f"res {GPIO.input(14)}")
+time.sleep(1)
+GPIO.output(2, 1)
+print(f"res {GPIO.input(14)}")
+time.sleep(1)
+
+"""
+pi.write(2, 0)
+print(f"res {pi.read(14)}")
+time.sleep(1)
+pi.write(2, 1)
+print(f"res {pi.read(14)}")
+time.sleep(1)
+"""
 
 for i in range (40):
     # print(f"testing pin, from, to: {pinout_wiring[i][0]}, {pinout_wiring[i][1]}, {pinout_wiring[i][2]}")
