@@ -1,7 +1,8 @@
-import subprocess
-import os
 import time
+import RPi.GPIO as GPIO
+GPIO.setmode(GPIO.BCM)
 
+# define the connections between the pins.
 pinout_wiring = [
     (1, 0, 0),     (2, 0, 0), # 3.V, 5V,
     (3, 2, 14),    (4, 0, 0), # 5V
@@ -27,31 +28,7 @@ pinout_wiring = [
 for i in pinout_wiring:
     print(i)
 
-"""
-This bit just gets the pigpiod daemon up and running if it isn't already.
-The pigpio daemon accesses the Raspberry Pi GPIO.
-"""
-"""
-def start_pigpiod():
-    p = subprocess.Popen(['pgrep', '-f', 'pigpiod'], stdout=subprocess.PIPE)
-    out, err = p.communicate()
-
-    if len(out.strip()) == 0:
-        os.system("sudo pigpiod")
-        time.sleep(3)
-
-start_pigpiod()
-import pigpio
-
-pi = pigpio.pi()
-
-"""
-
-import RPi.GPIO as GPIO
-
-
-GPIO.setmode(GPIO.BCM)
-
+# Class for testing pins
 class Test:
     def __init__(self, pin_num, out_pin, in_pin):
         self.pin_num = pin_num
@@ -85,29 +62,22 @@ class Test:
         print(f"pin {self.pin_num} {self.out_pin} {self.in_pin} {GPIO.input(self.in_pin)}")
         time.sleep(0.2)
 
-        print(result)
+        print("True = PASS", result)
         return result
 
-
-
-"""
-pi.write(2, 0)
-print(f"res {pi.read(14)}")
-time.sleep(1)
-pi.write(2, 1)
-print(f"res {pi.read(14)}")
-time.sleep(1)
-"""
 
 tests =[]
 results =[]
 
+# Cycle through all the pins, testing each pin separately.
 for i in range (40):
     if pinout_wiring[i][1] != 0 and pinout_wiring[i][2] != 0:
         test = Test(pinout_wiring[i][0], pinout_wiring[i][1], pinout_wiring[i][2])
         tests.append(test)
 
 overall_pass = True
+
+# Determine the overall pass/fail result.
 for test in tests:
     result = test.test()
 
@@ -116,36 +86,6 @@ for test in tests:
 
     results.append(result)
 
-print(results)
+print("True = Pass, False = Fail", results)
 
-print(f"Overall Results {overall_pass}")
-
-"""
-    # print(f"testing pin, from, to: {pinout_wiring[i][0]}, {pinout_wiring[i][1]}, {pinout_wiring[i][2]}")
-        pi.write(pinout_wiring[i][1], 0)
-
-        print(f"  pin, from, to, results: {pinout_wiring[i][0]}, {pinout_wiring[i][1]}, {pinout_wiring[i][2]}, "
-              f"{pi.read(pinout_wiring[i][2])}")
-
-        time.sleep(1)
-        pi.write(pinout_wiring[i][1], 1)
-        print(f"  pin, from, to, results: {pinout_wiring[i][0]}, {pinout_wiring[i][1]}, {pinout_wiring[i][2]}, "
-              f"{pi.read(pinout_wiring[i][2])}")
-        time.sleep(1)
-
-
-for i in range(2, 28):
-    pi.write(i,0)
-
-    results =[]
-
-    for j in range(2, 28):
-        result = pi.read(j)
-        results.append((j, result))
-
-    time.sleep(1)
-    print(results)
-    time.sleep(2)
-    pi.write(i, 0)
-"""
-
+print(f"Overall Results (Pass = True, Fail = False) Overall Pass? {overall_pass}")
